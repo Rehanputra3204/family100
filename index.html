@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Treasure Hunt - Family 100</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBO1xSoQ5DGnpy_dX1zIX9GLHkv2Wf0gOI",
+      authDomain: "family100-f1eed.firebaseapp.com",
+      projectId: "family100-f1eed",
+      storageBucket: "family100-f1eed.firebasestorage.app",
+      messagingSenderId: "875213159785",
+      appId: "1:875213159785:web:6f29cc798100993ff591f8"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    document.getElementById("submitBtn").addEventListener("click", async () => {
+      const input = document.getElementById("answer").value.trim().toLowerCase();
+      const docRef = doc(db, "jawaban", input);
+      const docSnap = await getDoc(docRef);
+
+      const result = document.getElementById("result");
+      if (!docSnap.exists()) {
+        result.textContent = "Jawaban salah atau tidak dikenal!";
+        result.style.color = "red";
+        return;
+      }
+
+      const count = docSnap.data().count || 0;
+      if (count >= 5) {
+        result.textContent = "Jawaban ini sudah mencapai batas maksimal (5)!";
+        result.style.color = "orange";
+        return;
+      }
+
+      await updateDoc(docRef, { count: increment(1) });
+      result.innerHTML = `Selamat! Ini link hadiahmu: <a href="https://link.dana.id/danakaget?c=spkfkcyve&r=gG6E86&orderId=20250416101214191715010300166662418047031" target="_blank">Klaim Hadiah</a>`;
+      result.style.color = "green";
+    });
+  </script>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 50px;
+      background-color: #f3f4f6;
+    }
+    input {
+      padding: 10px;
+      width: 300px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Treasure Hunt - Family 100</h1>
+  <p><strong>Pertanyaan:</strong> Sebutkan 7 game online!</p>
+  <input type="text" id="answer" placeholder="Tulis jawabanmu di sini...">
+  <br>
+  <button id="submitBtn">Kirim Jawaban</button>
+  <div id="result"></div>
+</body>
+</html>
